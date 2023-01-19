@@ -22,3 +22,12 @@ void huffman::traverse(Node *r, string str)
     traverse(r->right, str + '1');
 }
 
+int huffman::binToDec(string inStr)
+{
+    int res = 0;
+    for (auto c : inStr)
+    {
+        res = res * 2 + c - '0';
+    }
+    return res;
+}
