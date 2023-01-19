@@ -31,3 +31,19 @@ int huffman::binToDec(string inStr)
     }
     return res;
 }
+
+string huffman::decToBin(int inNum)
+{
+    string temp = "", res = "";
+    while (inNum > 0)
+    {
+        temp += (inNum % 2 + '0');
+        inNum /= 2;
+    }
+    res.append(8 - temp.length(), '0');
+    for (int i = temp.length() - 1; i >= 0; i--)
+    {
+        res += temp[i];
+    }
+    return res;
+}
