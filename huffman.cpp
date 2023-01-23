@@ -47,3 +47,29 @@ string huffman::decToBin(int inNum)
     }
     return res;
 }
+
+void huffman::buildTree(char a_code, string &path)
+{
+    Node *curr = root;
+    for (int i = 0; i < path.length(); i++)
+    {
+        if (path[i] == '0')
+        {
+            if (curr->left == NULL)
+            {
+                curr->left = new Node();
+            }
+            curr = curr->left;
+        }
+        else if (path[i] == '1')
+        {
+            if (curr->right == NULL)
+            {
+                curr->right = new Node();
+            }
+            curr = curr->right;
+        }
+    }
+    curr->data = a_code;
+}
+
