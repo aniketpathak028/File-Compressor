@@ -271,3 +271,17 @@ void huffman::getTree()
     }
     inFile.close();
 }
+
+void huffman::compress()
+{
+    createMinHeap();
+    createTree();
+    createCodes();
+    saveEncodedFile();
+}
+
+void huffman::decompress()
+{
+    getTree();
+    saveDecodedFile();
+}
