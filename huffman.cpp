@@ -73,3 +73,24 @@ void huffman::buildTree(char a_code, string &path)
     curr->data = a_code;
 }
 
+void huffman::createMinHeap()
+{
+    char id;
+    inFile.open(inFileName, ios::in);
+    inFile.get(id);
+    // Incrementing frequency of characters that appear in the input file
+    while (!inFile.eof())
+    {
+        arr[id]->freq++;
+        inFile.get(id);
+    }
+    inFile.close();
+    // Pushing the Nodes which appear in the file into the priority queue (Min Heap)
+    for (int i = 0; i < 128; i++)
+    {
+        if (arr[i]->freq > 0)
+        {
+            minHeap.push(arr[i]);
+        }
+    }
+}
