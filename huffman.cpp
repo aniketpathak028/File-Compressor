@@ -239,3 +239,35 @@ void huffman::saveDecodedFile()
     outFile.close();
 }
 
+void huffman::getTree()
+{
+    inFile.open(inFileName, ios::in | ios::binary);
+    // Reading size of MinHeap
+    unsigned char size;
+    inFile.read(reinterpret_cast<char *>(&size), 1);
+    root = new Node();
+    // next size * (1 + 16) characters contain (char)data and (string)code[in decimal]
+    for (int i = 0; i < size; i++)
+    {
+        char aCode;
+        unsigned char hCodeC[16];
+        inFile.read(&aCode, 1);
+        inFile.read(reinterpret_cast<char *>(hCodeC), 16);
+        // converting decimal characters into their binary equivalent to obtain code
+        string hCodeStr = "";
+        for (int i = 0; i < 16; i++)
+        {
+            hCodeStr += decToBin(hCodeC[i]);
+        }
+        // Removing padding by ignoring first (127 - curr->code.length()) '0's and next '1' character
+        int j = 0;
+        while (hCodeStr[j] == '0')
+        {
+            j++;
+        }
+        hCodeStr = hCodeStr.substr(j + 1);
+        // Adding node with aCode data and hCodeStr string to the huffman tree
+        buildTree(aCode, hCodeStr);
+    }
+    inFile.close();
+}
