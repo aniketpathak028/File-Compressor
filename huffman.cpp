@@ -94,3 +94,25 @@ void huffman::createMinHeap()
         }
     }
 }
+
+void huffman::createTree()
+{
+    // Creating Huffman Tree with the Min Heap created earlier
+    Node *left, *right;
+    priority_queue<Node *, vector<Node *>, Compare> tempPQ(minHeap);
+    while (tempPQ.size() != 1)
+    {
+        left = tempPQ.top();
+        tempPQ.pop();
+
+        right = tempPQ.top();
+        tempPQ.pop();
+
+        root = new Node();
+        root->freq = left->freq + right->freq;
+
+        root->left = left;
+        root->right = right;
+        tempPQ.push(root);
+    }
+}
