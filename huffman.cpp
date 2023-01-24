@@ -116,3 +116,70 @@ void huffman::createTree()
         tempPQ.push(root);
     }
 }
+
+void huffman::createCodes()
+{
+    // Traversing the Huffman Tree and assigning specific codes to each character
+    traverse(root, "");
+}
+
+void huffman::saveEncodedFile()
+{
+    // Saving encoded (.huf) file
+    inFile.open(inFileName, ios::in);
+    outFile.open(outFileName, ios::out | ios::binary);
+    string in = "";
+    string s = "";
+    char id;
+
+    // Saving the meta data (huffman tree)
+    in += (char)minHeap.size();
+    priority_queue<Node *, vector<Node *>, Compare> tempPQ(minHeap);
+    while (!tempPQ.empty())
+    {
+        Node *curr = tempPQ.top();
+        in += curr->data;
+        // Saving 16 decimal values representing code of curr->data
+        s.assign(127 - curr->code.length(), '0');
+        s += '1';
+        s += curr->code;
+        // Saving decimal values of every 8-bit binary code
+        in += (char)binToDec(s.substr(0, 8));
+        for (int i = 0; i < 15; i++)
+        {
+            s = s.substr(8);
+            in += (char)binToDec(s.substr(0, 8));
+        }
+        tempPQ.pop();
+    }
+    s.clear();
+
+    // Saving codes of every charachter appearing in the input file
+    inFile.get(id);
+    while (!inFile.eof())
+    {
+        s += arr[id]->code;
+        // Saving decimal values of every 8-bit binary code
+        while (s.length() > 8)
+        {
+            in += (char)binToDec(s.substr(0, 8));
+            s = s.substr(8);
+        }
+        inFile.get(id);
+    }
+
+    // Finally if bits remaining are less than 8, append 0's
+    int count = 8 - s.length();
+    if (s.length() < 8)
+    {
+        s.append(count, '0');
+    }
+    in += (char)binToDec(s);
+    // append count of appended 0's
+    in += (char)count;
+
+    // write the in string to the output file
+    outFile.write(in.c_str(), in.size());
+    inFile.close();
+    outFile.close();
+}
