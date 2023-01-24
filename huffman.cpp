@@ -183,3 +183,59 @@ void huffman::saveEncodedFile()
     inFile.close();
     outFile.close();
 }
+
+void huffman::saveDecodedFile()
+{
+    inFile.open(inFileName, ios::in | ios::binary);
+    outFile.open(outFileName, ios::out);
+    unsigned char size;
+    inFile.read(reinterpret_cast<char *>(&size), 1);
+    // Reading count at the end of the file which is number of bits appended to make final value 8-bit
+    inFile.seekg(-1, ios::end);
+    char count0;
+    inFile.read(&count0, 1);
+    // Ignoring the meta data (huffman tree) (1 + 17 * size) and reading remaining file
+    inFile.seekg(1 + 17 * size, ios::beg);
+
+    vector<unsigned char> text;
+    unsigned char textseg;
+    inFile.read(reinterpret_cast<char *>(&textseg), 1);
+    while (!inFile.eof())
+    {
+        text.push_back(textseg);
+        inFile.read(reinterpret_cast<char *>(&textseg), 1);
+    }
+
+    Node *curr = root;
+    string path;
+    for (int i = 0; i < text.size() - 1; i++)
+    {
+        // Converting decimal number to its equivalent 8-bit binary code
+        path = decToBin(text[i]);
+        if (i == text.size() - 2)
+        {
+            path = path.substr(0, 8 - count0);
+        }
+        // Traversing huffman tree and appending resultant data to the file
+        for (int j = 0; j < path.size(); j++)
+        {
+            if (path[j] == '0')
+            {
+                curr = curr->left;
+            }
+            else
+            {
+                curr = curr->right;
+            }
+
+            if (curr->left == NULL && curr->right == NULL)
+            {
+                outFile.put(curr->data);
+                curr = root;
+            }
+        }
+    }
+    inFile.close();
+    outFile.close();
+}
+
